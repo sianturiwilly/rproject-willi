@@ -1,0 +1,6 @@
+print(01)
+print(1)
+print("01-01-1980")
+print("1-1-1980")
+print("Budi")
+print("BUDI")
