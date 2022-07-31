@@ -1,8 +1,9 @@
 # install.packages("ggplot2")
 library(ggplot2)
+
 #Membaca data csv dan dimasukkan ke variable penduduk.dki
 penduduk.dki <- read.csv("https://storage.googleapis.com/dqlab-dataset/dkikepadatankelurahan2013.csv", sep=",")
-# Masukkan data ke dalam plot dan simpan sebagai variable plot.dki, dan tampilkan summary dari plot tersebut
-# ggplot(data = penduduk.dki)
-plot.dki <- ggplot(data = penduduk.dki)
-summary(plot.dki)
+
+plot.dki <- ggplot(data=penduduk.dki, aes(x = KEPADATAN..JIWA.KM2., fill = NAMA.KABUPATEN.KOTA))
+
+plot.dki + geom_histogram(binwidth = 10000)
