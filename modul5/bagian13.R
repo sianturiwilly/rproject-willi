@@ -1,3 +1,5 @@
+# Modul 5: Data Science in Marketing: Customer Segmentation
+# Bab 3: Clustering dan Algoritma K-Means
 # Materi: Available Components
 
 #Bagian Data Preparation
@@ -12,6 +14,6 @@ field_yang_digunakan = c("Jenis.Kelamin.1", "Umur", "Profesi.1", "Tipe.Residen.1
 #Bagian K-Means
 set.seed(100)
 segmentasi <- kmeans(x=pelanggan[field_yang_digunakan], centers=5, nstart=25)
-segmentasi$cluster
 segmentasi$withinss
+segmentasi$cluster
 segmentasi$tot.withinss
