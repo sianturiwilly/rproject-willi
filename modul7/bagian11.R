@@ -6,7 +6,7 @@
 library(readr) #pre-defined
 library(dplyr) #pre-defined
 
-sleep_df <- read.csv('https://storage.googleapis.com/dqlab-dataset/sleep.csv') #pre-defined
+sleep_df <- read_csv('https://storage.googleapis.com/dqlab-dataset/sleep.csv') #pre-defined
 
 # Save the data in two different dataframe/vector
 group1 <- filter(sleep_df, sleep_df$group == 1)
