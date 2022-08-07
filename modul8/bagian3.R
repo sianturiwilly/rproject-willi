@@ -2,4 +2,5 @@
 # Bab 1: Pendahuluan
 # Materi: Statistik Dekriptif data
 
+# summary(data$OSL)
 summary(data)
