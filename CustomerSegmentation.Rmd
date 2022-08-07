@@ -1,0 +1,148 @@
+---
+title: "Data Science in Marketing: Customer Segmentation"
+author: "Willi Sianturi"
+date: "7/8/2022"
+output: html_document
+---
+```{r}
+
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+## Bab 1: Customer Segmentation
+
+### Selamat Datang
+
+Selamat Datang di course Machine Learning for Marketing: Customer Segmentation, dimana Anda akan diberikan materi step by step dan langsung praktek dengan berbagai fitur DQLab – yang memang dirancang untuk membantu Anda agar mudah menyerap materi dan memanfaatkannya dalam pekerjaan sehari-hari.
+
+Course ini dirancang dengan menggunakan dataset dari kasus skenario nyata di Indonesia. Untuk course, dataset yang digunakan cukup kecil dengan tujuan Anda dapat lebih mudah memahami dataset ini dan mampu beradaptasi ketika dihadapkan dataset yang lebih kompleks – seperti Anda akan temukan di bagian project DQLab.
+
+Apa yang akan Anda pelajari sepanjang course ini?  
+1. Apa dan kenapa Customer Segmentation dalam penggunaan di bisnis?  
+2. Aplikasi Customer Segmentation secara teknis dengan Algoritma K-Means di R  
+3. Bagaimana mempersiapkan data profil pelanggan di R agar dapat digunakan oleh algoritma K-Means  
+4. Mempaketkan algoritma sebagai model dan mengoperasionalkannya sehingga dapat digunakan sehari-hari oleh bisnis 
+
+Bagaimana Anda menarik manfaat dari DQLab ini?  
+1. Pelajari contoh dataset dalam course, karena walaupun kecil tapi mencerminkan  
+2. Kerjakan soal dan praktek sesuai dengan irama yang Anda rasa nyaman  
+3. Submit soal sesuai dengan permintaan soal  
+4. Tekan hint jika Anda merasa kesulitan  
+5. Ikut serta dan menyelesaikan project karena memiliki tingkat kompleksitas yang lebih tinggi dan mencerminkan kasus riil
+
+**Report Outline**:  
+1. Data Extraction  
+2. Exploratory Data Analysis (EDA)  
+3. Remove Outliers  
+4. Modelling  
+5. Evaluate the Model  
+6. Recomendation
+
+## Load the Libraries
+
+The following are the packages that need to be installed:
+
+## 1. Data Extraction
+
+This dataset is downloaded from Kaggle and saved in the data folder. We use **read.csv()** function to read the dataset and **insurance_df** as a data frame.
+
+## 1.1. Check for Missing Values
+
+This section is a check whether there is a missing value or not.
+
+```{r}
+```
+
+## 1.2. Change Target to Factor
+
+This section represents any of the factors that affect the cost of health insurance.
+
+## 2. Exploratory Data Analysis
+
+### 2.1. Charges Variables
+
+In this section, it is a variable part of health insurance costs.
+
+### 2.2. Age Variables
+
+In this section, it is a variable part of a person's age.
+
+### 2.3. Sex Variables
+
+In this section, it is part of the gender variable.
+
+### 2.4. BMI Variables
+
+In this section, is the variable part of body weight.
+
+### 2.5. The Number of Children
+
+In this section, it is a variable part of the number of children of that person.
+
+### 2.6. Smoker Variables
+
+In this section, it is a variable part of whether the person smokes or not.
+
+### 2.7. Region Variables
+
+In this section, it is a variable part based on where the person lives.
+
+## 3. Remove Outliers
+
+### 3.1. Get Outliers Values
+
+In this section, it is a part of getting the outliers value.
+
+### 3.2. Get Index of Outliers
+
+In this section, it is part of getting the index from the outliers.
+
+### 3.3. Data With Outliers
+
+In this section, is the part using data with outliers.
+
+### 3.4. Data Without Outliers
+
+In this section, it is a part of using data without outliers.
+
+### 3.5 One Hot Encoder
+
+In this section, it is one hot encoder.
+
+### 3.6. Divide Data Into Train and Test
+
+This section is dividing the data into two, namely train and test.
+
+## 4. Modelling
+
+### 4.1. Simple Linear Regression
+
+This section uses Simple Linear Regression.
+
+### 4.2. Polynomial Regression
+
+This section uses Polynomial Regression.
+
+### 4.3. Multiple Linear Regression
+
+This section uses Multiple Linear Regression.
+
+### 4.4. Multiple Linear Regression with Interaction
+
+This section uses Multiple Linear Regression with Interaction.
+
+## 5. Evaluate the Model
+
+This section evaluates the computational results of several types of regression models.
+
+### 5.1. Scatterplot
+
+For this section, display a graph of the error count results of the four different types of regression models.
+
+## 6. Recommendation
+
+1. Of the four types of regression models we use, the smaller error count is 4476.75 (Polynomial Regression).
+2. Factors that influence the cost of health insurance are weight, age, smoking and gender.
+3. Based on the results of the graph, the prediction of health insurance costs is below 20,000.
