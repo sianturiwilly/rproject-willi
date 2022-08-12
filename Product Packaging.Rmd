@@ -1,0 +1,62 @@
+---
+title: "Project Machine Learning for Retail with R: Product Packaging"
+author: "Willi Sianturi"
+date: "12/8/2022"
+output: html_document
+---
+```{r}
+
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+## **Bab 1: Machine Learning for Retail**
+
+### **Create Next Best Offering to Drive Revenue and Loyalty**
+
+**DQLab.id Fashion** adalah sebuah toko fashion yang menjual berbagai produk seperti jeans, kemeja, kosmetik, dan lain-lain. Walaupun cukup berkembang, namun dengan semakin banyaknya kompetitor dan banyak produk yang stoknya masih banyak tentunya membuat khawatir Pak Agus, manajer DQLab.id Fashion. 
+
+Salah satu solusi adalah membuat paket yang inovatif. Dimana produk yang sebelumnya tidak terlalu laku tapi punya pangsa pasar malah bisa dipaketkan dan laku.
+
+Anda sebagai seorang <i>data scientist</i>, akan ditugaskan membantu Pak Agus untuk mengidentifikasi paket produk yang menarik untuk dipaketkan sehingga akhirnya bisa meningkatkan keuntungan dan loyalitas para pelanggan DQLab.id Fashion. Dan untuk wewujudkan ini, Anda akan menggunakan R dan algoritma aproriari dari paket **arules** di sepanjang project ini.  
+
+Dataset Transaksi Penjualan DQLab.id Fashion
+Untuk memulai project ini, Pak Agus meminta **Pak Charlie**, data engineer dari DQLab.id Fashion memberikan data transaksi 3 bulan kepada Anda dalam bentuk format **TSV (Tab Separated Value)** dengan nama **transaksi_dqlab_retail.tsv** dengan jumlah baris 33,669 baris data (3,450 kode transaksi).
+
+Berikut adalah tampilan datanya.
+
+Data transaksi ini telah dirapikan untuk Anda dengan hanya mengandung dua variabel, yaitu:  
+1. Kode Transaksi  
+2. Nama Barang 
+
+Variabel lain seperti harga, tanggal, jumlah pembelian, dan lain-lain – tidak dimasukkan sesuai permintaan pihak DQLab.id Academy kepada DQLab.id Fashion dengan alasan dua variabel tersebut sudah cukup.  
+
+### **Petunjuk Penyelesaian Project**  
+
+Untuk menyelesaikan project, maka kita akan mengetikkan code yang perlu di-<i>submit</i> untuk dicek jawabannya benar atau salah. Berbeda dengan <i>course</i>, setiap code yang di-<i>submit</i> akan otomatis disimpan dan dimunculkan kondisi code terakhir setiap kali Anda buka soal terkait.
+
+Project ini terdiri dari 3 soal, yaitu:  
+1. Mendapatkan <i>insight</i> **top 10** dan **bottom 10** dari produk yang terjual.  
+2. Mendapatkan daftar seluruh kombinasi paket produk dengan korelasi yang kuat.  
+3. Mendapatkan daftar seluruh kombinasi paket produk dengan item tertentu.  
+
+Tiap soal memerlukan input dataset yang telah dijelaskan pada subbab sebelumnya. Setelah diproses maka Anda perlu menuliskan dalam nama file sesuai petunjuk.  
+
+**Tugas Praktek**
+
+Cobalah jalankan <i>code</i> yang sudah ada pada **code editor** berikut di mana <i>file</i> dataset dibaca dan kemudian langsung ditulis menggunakan <i>function</i> **write** dari <i>package</i> **arules**.
+
+Jika berjalan dengan lancar maka pada saat klik Download Output File seperti berikut:
+
+```{r}
+library(arules)
+transaksi_tabular <- read.transactions(file="https://storage.googleapis.com/dqlab-dataset/transaksi_dqlab_retail.tsv", format="single", sep="\t", cols=c(1,2), skip=1)
+write(transaksi_tabular, file="test_project_retail_1.txt", sep=",")
+```
+
+Kita akan mendapatkan daftar <i>file</i> di mana salah satunya adalah <i>file</i> bernama **test_project_retail1.txt** seperti terlihat pada gambar berikut.
+
+Catatan: tampilan daftar file dapat berbeda dengan daftar milik Anda.
+
+Tampilan di dalam file test_project_retail_1.txt sebagian isinya akan terlihat sebagai berikut.

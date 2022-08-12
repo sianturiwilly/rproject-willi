@@ -1,7 +1,7 @@
 ---
 title: "Data Science in Marketing: Customer Segmentation"
 author: "Willi Sianturi"
-date: "7/8/2022"
+date: "12/8/2022"
 output: html_document
 ---
 ```{r}
@@ -11,9 +11,9 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-## Bab 1: Customer Segmentation
+## **Bab 1: Customer Segmentation**
 
-### Selamat Datang
+### **Selamat Datang**
 
 Selamat Datang di course Machine Learning for Marketing: Customer Segmentation, dimana Anda akan diberikan materi step by step dan langsung praktek dengan berbagai fitur DQLab – yang memang dirancang untuk membantu Anda agar mudah menyerap materi dan memanfaatkannya dalam pekerjaan sehari-hari.
 
@@ -30,119 +30,551 @@ Bagaimana Anda menarik manfaat dari DQLab ini?
 2. Kerjakan soal dan praktek sesuai dengan irama yang Anda rasa nyaman  
 3. Submit soal sesuai dengan permintaan soal  
 4. Tekan hint jika Anda merasa kesulitan  
-5. Ikut serta dan menyelesaikan project karena memiliki tingkat kompleksitas yang lebih tinggi dan mencerminkan kasus riil
+5. Ikut serta dan menyelesaikan project karena memiliki tingkat kompleksitas yang lebih tinggi dan mencerminkan kasus riil  
 
-**Report Outline**:  
-1. Data Extraction  
-2. Exploratory Data Analysis (EDA)  
-3. Remove Outliers  
-4. Modelling  
-5. Evaluate the Model  
-6. Recomendation
+Kenapa Customer Segmentation Penting?  
+1. Dapat membuat pesan pemasaran yang lebih mengena ke tiap pelanggan  
+2. Bisa lebih mengenal customer / pelanggan  
+3. Biaya pemasaran bisa menjadi lebih rendah  
 
-## Load the Libraries
+Kenapa Perlu Bantuan Algoritma untuk Customer Segmentation?  
+1. Agar kita dapat membagi-bagi segmen customer dengan gampang  
+2. Dapat membantu kita menentukan jumlah clustering yang optimal  
+3. Dapat memberikan hasil jauh lebih cepat  
+4. Karena bisa memberikan best practice  
 
-The following are the packages that need to be installed:
+**Kesimpulan**  
+1. Customer segmentation adalah proses penting yang diperlukan di bisnis untuk mengenal customer dengan lebih baik  
+2. Dengan demikian proses bisnis di marketing (pemasaran) dan CRM (customer relationship management) bisa dilakukan lebih tajam. Contoh: pesan marketing bisa lebih personal untuk setiap segment dengan biaya lebih optimal.  
+3. Dengan proses yang lebih tajam, performa bisnis berpotensi tinggi menjadi lebih baik juga.  
+4. Untuk menemukan segmentasi yang baik, perlu proses analisa data dari profile customer yang cukup banyak dan rutin. Ini bisa dibantu dengan algoritma komputer.  
 
-## 1. Data Extraction
+## **Bab 2: Persiapan Data**
 
-This dataset is downloaded from Kaggle and saved in the data folder. We use **read.csv()** function to read the dataset and **insurance_df** as a data frame.
+### **Pengantar**
 
-## 1.1. Check for Missing Values
+Persiapan data adalah langkah pertama yang kita lakukan sebelum menggunakan algoritma apapun untuk melakukan analisa data.
 
-This section is a check whether there is a missing value or not.
+Ini dikarenakan tiap implementasi algoritma menuntut struktur dan tipe data yang berbeda.
+
+Dan untuk kasus algoritma K-Means yang akan kita gunakan untuk otomatisasi clustering, maka struktur datanya adalah data.frame atau matrix yang di dalamnya berisi angka semua. Tidak ada yang boleh bertipe karakter.
+
+Namun pada kasus riil, hal ini tentulah tidak mungkin. Contoh, isi data profesi seperti "Professional", "Ibu Rumah Tangga" adalah teks. Dan ini perlu dikonversi dulu ke numerik, namun jika diperlukan tetap bisa kembali mengambil data teks.
+
+Nah, untuk lebih jelasnya. Kita akan lakukan langkah-langkah praktek yang akan kita lakukan berikut ini adalah untuk mempersiapkan data sebelum dapat digunakan algoritma clustering:  
+1. Mengenal Contoh File Dataset Pelanggan  
+2. Membaca File dengan read.csv  
+3. Vector untuk Menyimpan Nama Field  
+4. Konversi Data dengan data.matrix  
+5. Menggabungkan Hasil Konversi  
+6. Menormalisasikan Nilai Belanja  
+7. Membuat Data Master
+
+#### **Dataset Customer Segments**
+
+Dataset yang kita gunakan adalah data customer dengan field “Customer ID”, “Nama Pelanggan”,”Jenis Kelamin”,”Umur”, “Profesi”, “Tipe Residen” dan “Nilai Belanja Setahun” dengan tampilan sebagai berikut.
+
+Dataset ini bisa dilihat di https://storage.googleapis.com/dqlab-dataset/customer_segments.txt
+
+Data tersebut memiliki tujuh kolom dengan penjelasan sebagai berikut:  
+1. **Customer ID**: Kode pelanggan dengan format campuran teks CUST- diikuti angka  
+2. **Nama Pelanggan**: Nama dari pelanggan dengan format teks tentunya  
+3. **Jenis Kelamin**: Jenis kelamin dari pelanggan, hanya terdapat dua isi data kategori yaitu Pria dan Wanita  
+4. **Umur**: Umur dari pelanggan dalam format angka  
+5. **Profesi**: Profesi dari pelanggan, juga bertipe teks kategori yang terdiri dari Wiraswasta, Pelajar, Professional, Ibu Rumah Tangga, dan Mahasiswa.  
+6. **Tipe Residen**: Tipe tempat tinggal dari pelanggan kita, untuk dataset ini hanya ada dua kategori: Cluster dan Sector.  
+7. **NilaiBelanjaSetahun**: Merupakan jumlah uang yang dibelanjakan dalam setahun.
+
+Terlihat kalau ada kolom yang berisi angka saja, yaitu Umur dan NilaiBelanjaSetahun. Sisanya diisi data kategori untuku kolom "Jenis Kelamin", "Profesi" dan "Tipe Residen". Sedangkan "Customer ID" dan "Nama Pelanggan" kita anggap memiliki nilai yang unik untuk tiap baris data dan mewakili tiap individu.
+
+Karena kolom "Customer ID" dan "Nama Pelanggan" karena unik maka tidak akan dijadikan variable penentu segmentasi yang kita lakukan, namun sisa kolom lainnya akan digunakan.
+
+Nah dengan contoh dataset inilah, kita akan mencoba mencari jumlah segmentasi yang paling optimal – dimana antar tiap data pelanggan dalam segmen memiliki kemiripan tinggi – sepanjang course ini.
+
+#### **Membaca data dengan fungsi read.csv**
+
+Langkah pertama yang perlu kita lakukan adalah membaca dataset tersebut dari file teks menjadi data.frame di R dengan perintah **read.csv**.
+
+Mari kita praktekkan penggunaan read.csv ini dengan mengetikkan perintah berikut pada code editor.  
 
 ```{r}
+pelanggan <- read.csv("https://storage.googleapis.com/dqlab-dataset/customer_segments.txt", sep="\t")
 ```
 
-## 1.2. Change Target to Factor
+Keterangan kode:  
+1. **pelanggan**: nama variable yang digunakan untuk menampung data dari contoh dataset  
+2. **csv**: function yang digunakan untuk membaca contoh dataset yang berupa file  
+3. https://storage.googleapis.com/dqlab-dataset/customer_segments.txt: lokasi dataset yang terdapat di web DQLab. Jika lokasi file dan aplikasi R terdapat di komputer lokal Anda, maka gantilah dengan lokasi file di lokal. Misalkan c:\data\customer_segments.txt  
 
-This section represents any of the factors that affect the cost of health insurance.
+Jika terjadi error berikut, maka periksa kembali penulisan code – huruf besar, huruf kecil dan juga penulisan lokasi file – dengan teliti.
 
-## 2. Exploratory Data Analysis
+Error in file(file, "rt") : cannot open the connection
 
-### 2.1. Charges Variables
+Jika tidak terjadi error maka langkah selanjutnya adalah menampilkan isi data dengan mengetikkan nama variable pelanggan pada code editor sebagai berikut.
 
-In this section, it is a variable part of health insurance costs.
+Hasil eksekusi perintah ini akan tampak sebagai berikut.  
 
-### 2.2. Age Variables
+```{r}
+pelanggan <- read.csv("https://storage.googleapis.com/dqlab-dataset/customer_segments.txt", sep="\t")
+pelanggan[c("Jenis.Kelamin","Umur","Profesi","Tipe.Residen")]
+pelanggan
+```
 
-In this section, it is a variable part of a person's age.
+Terlihat isi data dengan enam kolom dan terdapat nomor baris pada tiap data yang ditampilkan.
 
-### 2.3. Sex Variables
+Perhatikan jika nama kolom asal terdapat karakter spasi, akan diubah menjadi tanda titik setelah dibaca dengan read.csv. Sebagai contoh, "Nama Pelanggan" diubah menjadi "Nama.Pelanggan".
 
-In this section, it is part of the gender variable.
+Jika kita hanya ingin menampilkan beberapa kolom tertentu, misalkan untuk kolom "Jenis.Kelamin" dan "Profesi" maka perintahnya adalah sebagai berikut.
 
-### 2.4. BMI Variables
+```{r}
+pelanggan[c("Nama.Pelanggan","Profesi")]
+```
 
-In this section, is the variable part of body weight.
+**Praktek**:
 
-### 2.5. The Number of Children
+Lengkapi code pada code editor untuk  menampilkan data frame dari kolom dari "Jenis.Kelamin", "Umur", "Profesi" dan "Tipe.Residen".
 
-In this section, it is a variable part of the number of children of that person.
+```{r}
+pelanggan <- read.csv("https://storage.googleapis.com/dqlab-dataset/customer_segments.txt", sep="\t")
+pelanggan[c("Jenis.Kelamin","Umur","Profesi","Tipe.Residen")]
+```
 
-### 2.6. Smoker Variables
+#### **Vector untuk Menyimpan Nama Field**  
 
-In this section, it is a variable part of whether the person smokes or not.
+Perhatikan jika nama-nama field yang telah kita gunakan pada praktek sebelumnya, sebenarnya adalah sebuah vector  
 
-### 2.7. Region Variables
+```{r}
+c("Jenis.Kelamin", "Umur", "Profesi", "Tipe.Residen")
+```
 
-In this section, it is a variable part based on where the person lives.
+Dan ini bisa dimasukkan ke dalam variable, dengan tujuan dapat digunakan berulang kali dalam script R.
 
-## 3. Remove Outliers
+Gantilah tulisan [jawaban1] pada code editor dengan variable vector bernama **field_yang_digunakan** dan diisi dengan 3 teks: "Jenis.Kelamin", "Umur" dan "Profesi" .
 
-### 3.1. Get Outliers Values
+Kemudian tampilkan isi variable pelanggan dengan field_yang_digunakan dengan code yang akan menggantikan [jawaban2] pada code editor.
 
-In this section, it is a part of getting the outliers value.
+```{r}
+#Membaca data csv dan dimasukkan ke variable pelanggan
+pelanggan <- read.csv("https://storage.googleapis.com/dqlab-dataset/customer_segments.txt",sep="\t")
+#Buat variable field_yang_digunakan dengan isi berupa vector "Jenis.Kelamin", "Umur" dan "Profesi"
+field_yang_digunakan <- c("Jenis.Kelamin","Umur","Profesi")
+#Tampilan data pelanggan dengan nama kolom sesuai isi vector field_yang_digunakan
+pelanggan[field_yang_digunakan]
+```
 
-### 3.2. Get Index of Outliers
+#### **Konversi Data dengan data.matrix**  
 
-In this section, it is part of getting the index from the outliers.
+Seperti telah dijelaskan sebelumnya, isi data dari tiga kolom pelanggan yaitu "Jenis.Kelamin", "Profesi" dan "Tipe.Residen" merupakan data kategori yang berupa teks.
 
-### 3.3. Data With Outliers
+Untuk fungsi k-means, ketiga kolom ini tidak bisa digunakan kecuali isi dikonversi menjadi numerik. Salah satu caranya adalah dengan menggunakan fungsi **data.matrix**.
 
-In this section, is the part using data with outliers.
+Perintahnya cukup sederhana, seperti terlihat pada contoh berikut.    
 
-### 3.4. Data Without Outliers
+```{r}
+data.matrix(pelanggan[c("Jenis.Kelamin", "Profesi")])
+```
 
-In this section, it is a part of using data without outliers.
+Perintah ini akan mengkonversi data **pelanggan** pada kolom "Jenis.Kelamin" dan "Profesi" yang diwakili oleh pelanggan[c("Jenis.Kelamin", "Profesi")] menjadi numerik.  
 
-### 3.5 One Hot Encoder
+Terlihat, teks "Pria" diubah menjadi angka 1, "Wanita" diubah menjadi angka 2, "Wiraswasta" diubah menjadi angka 5, dan seterusnya.
 
-In this section, it is one hot encoder.
+**Tugas Praktek**:
 
-### 3.6. Divide Data Into Train and Test
+Gantilah tulisan […]pada editor dengan code yang sesuai.
 
-This section is dividing the data into two, namely train and test.
+Buatlah variable pelanggan_matrix yang diisi dengan konversi teks menjadi numerik dari variable pelanggan pada kolom "Jenis.Kelamin", "Profesi", dan "Tipe.Residen".
 
-## 4. Modelling
+```{r}
+pelanggan <- read.csv("https://storage.googleapis.com/dqlab-dataset/customer_segments.txt",sep="\t")
+#Konversi data menjadi numerik
+pelanggan_matrix <- data.matrix(pelanggan[c("Jenis.Kelamin", "Profesi", "Tipe.Residen")])
+```
 
-### 4.1. Simple Linear Regression
+#### **Menggabungkan Hasil Konversi**  
 
-This section uses Simple Linear Regression.
+Setelah Anda bisa melakukan konversi ke angka, kita perlu mengetahui bagaimana menggabungkan kembali data tersebut ke variable asal kita.  
 
-### 4.2. Polynomial Regression
+Ini berguna terutam apada praktek lanjutan di akhir course, yaitu ketika kita akan mengenali data pelanggan baru masuk ke segment mana.  
 
-This section uses Polynomial Regression.
+Untuk menggabungkan data hasil konversi data.matrix ke pelanggan, kita gunakan funtion **data.frame**.  
 
-### 4.3. Multiple Linear Regression
+Sebagai contoh, untuk menggabungkan variable pelanggan dan pelanggan_matrix maka perintahnya adalah sebagai berikut.  
 
-This section uses Multiple Linear Regression.
+```{r}
+data.frame(pelanggan, pelanggan_matrix)
+```
 
-### 4.4. Multiple Linear Regression with Interaction
+**Tugas Praktek**:
 
-This section uses Multiple Linear Regression with Interaction.
+Gantilah tulisan […]pada editor dengan code yang sesuai.  
 
-## 5. Evaluate the Model
+Gabungkan variable pelanggan dan pelanggan_matrix dengan function data.frame dan masukkan kembali ke variable pelanggan.  
 
-This section evaluates the computational results of several types of regression models.
+Catatan: Jika berhasil, maka isi penggabungan ini akan menambahkan kolom bernama "Jenis.Kelamin.1", "Profesi.1", dan "Tipe.Residen.1" yang sebelumnya tidak ada pada kedua variable seperti berikut.  
 
-### 5.1. Scatterplot
+Akhiran .1 ini ditambahkan karena di variable pelanggan sudah ada nama kolom yang sama.  
 
-For this section, display a graph of the error count results of the four different types of regression models.
+Sebagai contoh kolom "Jenis.Kelamin" yang terdapat pada pelanggan_matrix sudah ada juga di variable pelanggan. Jadi ketika digabungkan, R akan menambahkan akhiran .1 untuk kolom "Jenis.Kelamin" yang terdapat di pelanggan_matrix.  
 
-## 6. Recommendation
+```{r}
+pelanggan <- read.csv("https://storage.googleapis.com/dqlab-dataset/customer_segments.txt",sep="\t")
+pelanggan_matrix <- data.matrix(pelanggan[c("Jenis.Kelamin", "Profesi", "Tipe.Residen")])
+#Penggabungan data
+pelanggan <- data.frame(pelanggan, pelanggan_matrix)
+#Tampilkan kembali data hasil penggabungan
+pelanggan
+```
 
-1. Of the four types of regression models we use, the smaller error count is 4476.75 (Polynomial Regression).
-2. Factors that influence the cost of health insurance are weight, age, smoking and gender.
-3. Based on the results of the graph, the prediction of health insurance costs is below 20,000.
+
+#### **Menormalisasikan Nilai Belanja**  
+
+Kali ini kita perhatikan kolom "NilaiBelanjaSetahun" isi datanya bernilai jutaan. Ketika kolom ini digunakan untuk clustering, perhitungan sum of squared errors (pada bab kmeans) akan menjadi sangat besar.
+
+Kita akan menormalisasikan nilainya agar perhitungan lebih sederhana dan mudah dicerna, namun tidak mengurangi akurasi. Ini terutama akan sangat bermanfaat jika jumlah data sangat banyak, misalkan memiliki 200 ribu data.
+
+Normalisasi bisa dilakukan dengan banyak cara. Untuk kasus kita, cukup dengan pembagian sehingga nilai jutaan menjadi puluhan.
+
+Mari kita langsung lakukan dengan mengerjakan praktek berikut.
+
+**Tugas Praktek**
+
+Gantilah tulisan […]pada editor dengan code yang sesuai.
+
+Isilah kolom NilaiBelanjaSetahun dengan nilai dari kolom itu sendiri dibagi dengan 1000000.  
+
+```{r}
+pelanggan <- read.csv("https://storage.googleapis.com/dqlab-dataset/customer_segments.txt", sep="\t")
+pelanggan_matrix <- data.matrix(pelanggan[c("Jenis.Kelamin", "Profesi", "Tipe.Residen")])
+pelanggan <- data.frame(pelanggan, pelanggan_matrix)
+#Normalisasi Nilai
+pelanggan$NilaiBelanjaSetahun <- pelanggan$NilaiBelanjaSetahun/1000000
+```
+
+#### **Membuat Data Master**  
+
+Setelah penggabungan data, kita jadi mengetahui sebenarnya teks kategori dikonversi menjadi angka numerik berapa.
+
+Sebagai contoh, jika kita menampilkan data kolom "Profesi" dan "Profesi.1" dengan perintah berikut.  
+
+```{r}
+pelanggan[c("Profesi","Profesi.1")]
+```
+
+Kelihatan kalau Wiraswasta dikonversi menjadi angka 5, Pelajar menjadi angka 3, Professional menjadi angka 4, Ibu Rumah Tangga menjadi angka 1, dan satu lagi  adalah Mahasiswa yang dikonversi menjadi angka 2 (tidak terlihat disini).
+
+Daftar data kategori dan hasil konversinya sangat penting untuk dijadikan referensi sehingga nanti ketika ada data baru, kita bisa "petakan" menjadi data numerik yang siap digunakan untuk algoritma clustering.
+
+Nah, masalahnya data di atas terlalu panjang, padahal sebenarnya kita cuma perlu 5 baris data bukan? Di R, kita bisa meringkasnya dengan function unique.
+
+Contoh perintahnya adalah sebagai berikut:  
+
+```{r}
+unique(pelanggan[c("Profesi","Profesi.1")])
+```
+
+Terlihat ya datanya sudah diringkas dengan teks kategori beserta pasangan numeriknya. Kemudian perhatikan juga angka-angka 1,2,3,17 dan 31 yang terdapat di bagian paling kiri. Ini menunjukkan posisi baris ditemukannya teks tersebut.
+
+Data ringkas dan unik ini untuk selanjutnya kita sebut sebagai data referensi atau data master.
+
+**Tugas Praktek**
+
+Gantilah tulisan […]pada editor dengan code yang sesuai.
+
+Buatlah tiga variable dengan nama Profesi, Jenis.Kelamin dan Tipe.Residen yang isinya berisi daftar unik dari pasangan kolom "Profesi" dan "Profesi.1", "Jenis.Kelamin" dan "Jenis.Kelamin.1", "Tipe.Residen" dan "Tipe.Residen.1".  
+
+```{r}
+pelanggan <- read.csv("https://storage.googleapis.com/dqlab-dataset/customer_segments.txt",sep="\t")
+pelanggan_matrix <- data.matrix(pelanggan[c("Jenis.Kelamin", "Profesi", "Tipe.Residen")])
+pelanggan <- data.frame(pelanggan, pelanggan_matrix)
+pelanggan$NilaiBelanjaSetahun = pelanggan$NilaiBelanjaSetahun/1000000
+#Mengisi data master
+Profesi <- unique(pelanggan[c("Profesi","Profesi.1")])
+Jenis.Kelamin <- unique(pelanggan[c("Jenis.Kelamin","Jenis.Kelamin.1")])
+Tipe.Residen <- unique(pelanggan[c("Tipe.Residen","Tipe.Residen.1")])
+```
+
+**Kesimpulan**  
+
+Selamat, Anda sudah menjalankan praktek-praktek yang menjadi dasar dari semua hal sebelum penggunaan analisa data, yaitu tahap persiapan data atau data preparation.
+
+Untuk algoritma clustering k-means yang akan kita gunakan di R, maka tahap data preparationnya adalah menyiapkan data yang di dalamnya harus berisi numerik.
+
+Namun pada banyak kasus riil, data tidak sepenuhnya berisi numerik seperti telah kita lihat sendiri dan praktekkan dengan contoh dataset yang digunakan pada bab ini dengan langkah-langkah berikut:  
+1. Mengenal Contoh File Dataset Pelanggan, dimana kita mengerti dulu bagaimana bentuk dan isi dari contoh yang digunakan.  
+2. Membaca File dengan read.csv, dimana kita membaca suatu file teks dengan pemisah berupa tab menggunakan fungsi read.csv.  
+3. Vector untuk Menyimpan Nama Field, dimana nama-nama field bisa disimpan dalam bentuk vector sehingga bisa digunakan berulang ketika kita buturh referensi nama-nama field yang sama.  
+4. Konversi Data dengan data.matrix, dimana kita bisa melakukan konversi data dari kategori teks menjadi numerik.  
+5. Menggabungkan Hasil Konversi, dimana hasil konversi ini perlu kita gabungkan kembali ke variable asal agar kita tidak kehilangan referensinya.  
+6. Menormalisasikan Nilai Belanja, dimana kita merubah skala data nilai belanja dari jutaan menjadi puluhan dengan tujuan penyederhanaan perhitungan namun tidak mengurangi akurasi.  
+7. Membuat Data Master, dimana kita meringkas data kategori dan numerik ke dalam variable-variable yang kita sebut sebagai data master.
+
+Dengan demikian, kita sudah siap melangkah ke bab berikutnya: Clustering dan Algoritma K-Means.  
+
+## **Bab 3: Clustering dan Algoritma K-Means**
+
+**Apa itu Clustering dan algoritma K-Means**  
+
+Clustering adalah proses pembagian objek-objek ke dalam beberapa kelompok (cluster) berdasarkan tingkat kemiripan antara satu objek dengan yang lain.  
+
+Beberapa contoh clustering:  
+1. Pengelompokan manusia berdasarkan umur: bayi, balita, anak, remaja, dewasa, tua.  
+2. Pengelompokan customer berdasarkan daya belinya: regular dan premium.  
+3. Pengelompokan makanan berdasarkan kandungan gizinya: biji-bijian, sayuran, buah-buahan, minyak, protein, dan lain-lain.  
+
+Banyak algoritma telah dikembangkan untuk melakukan clustering secara otomatis, salah satu yang sangat populer adalah K-Means yang akan menjadi fokus utama course kita.
+
+K-means adalah algoritma yang membagi data menjadi sejumlah partisi dengan cara sederhana: mencari kedekatan dari tiap titik pada suatu cluster dengan sejumlah nilai rata-rata atau mean.
+
+Ada dua konsep kunci yang juga menjadi nama asal k-means:  
+1. Jumlah partisi yang diinginkan, diwakili oleh huruf **k**  
+2. Mencari "jarak" kedekatan tiap titik ke sejumlah nilai rata-rata cluster yang diamati, diwakili oleh **means**
+ 
+Algoritma k-means sudah ada di paket dasar R dalam bentuk function bernama kmeans. Sepanjang bab ini, kita akan menggunakan function ini dan menganalisa output yang dihasilkan.  
+
+**Fungsi kmeans**  
+
+Praktek kali ini kita akan melakukan segmentasi langsung pada data pelanggan – yang telah kita lakukan persiapan datanya pada bab sebelumnya – dengan menggunakan function **kmeans**.
+
+Function kmeans memerlukan minimal 2 parameter, yaitu:  
+1. **x**: data yang digunakan, dimana semua isi datanya harus berupa numerik.  
+2. **centers**: jumlah cluster yang diinginkan.  
+
+Dan fungsi kmeans ini biasanya disertai dengan pemanggilan function **seet.seed**. Ini berguna agar kita "menyeragamkan" daftar nilai acak yang sama dari kmeans sehingga kita mendapatkan output yang sama.
+
+Berikut adalah contoh penggunaan fungsi kombinasi set.seed dan kmean.  
+
+```{r}
+set.seed(1)
+kmeans(x=pelanggan[c("Umur","Profesi.1")], centers=3)
+```
+
+Ini artinya kita membagi data pelanggan berdasarkan "Umur" dan "Profesi" menjadi 3 segmen.
+
+Kadang kala berdasarkan pengalaman DQLab, parameter data dan jumlah segmen saja tidak cukup. Perlu digunakan parameter ketiga yaitu **nstart**, yang merupakan jumlah kombinasi acak yang dihasilkan secara internal oleh R. Berdasarkan jumlah yang diberikan, algoritma akan memilih mana yang **terbaik** dari kombinasi-kombinasi tersebut.
+
+Kata **terbaik** berarti jarak antara tiap titik ke mean dari clusternya sendiri lebih kecil dibandingkan ke mean dari cluster lain.
+
+Perlu untuk diingat bahwa mean atau nilai rata-rata di sini sering disebut juga dengan **centroid** pada berbagai literatur data science.
+
+Berikut adalah modifikasi pemanggilan fungsi dengan parameter tambahan **nstart** sebesar 25.  
+
+```{r}
+kmeans(x=pelanggan[c("Umur","Profesi.1")], centers=3, nstart=25)
+```
+
+**Tugas Praktek**
+
+Code editor telah dilengkapi dengan potongan code untuk data preparation, dan kita perlu melengkapi […] dengan fungsi kmeans.
+
+Sesuai contoh pada Lesson, lengkapi fungsi kmeans tersebut dengan:  
+1. **x**: berisi data pelanggan dengan field-field yang diambil dari vector **field_yang_digunakan** (sudah didefinisikan di potongan code)  
+2. **centers**: jumlah segmen / cluster yang kita inginkan. Isi dengan 5.  
+3. **nstart**: isi dengan angka 25
+
+Ketika dieksekusi dengan lancar, Anda harusnya mendapatkan hasil seperti gambar di bawah ini.  
+
+Hasil ini dapat dibagi dalam lima bagian, dengan penjelasan sesuai nomor urut pada gambar sebagai berikut:  
+1. Ukuran / jumlah titik data pada tiap cluster  
+2. Nilai rata-rata (centroid) dari tiap cluster  
+3. Pembagian cluster dari tiap elemen data berdasarkan posisinya   
+4. Jumlah jarak kuadrat dari tiap titik ke centroidnya  
+5. Komponen informasi lain yang terkandung di dalam objek kmeans ini  
+
+```{r}
+#Bagian Data Preparation
+pelanggan <- read.csv("https://storage.googleapis.com/dqlab-dataset/customer_segments.txt", sep="\t")
+pelanggan_matrix <- data.matrix(pelanggan[c("Jenis.Kelamin", "Profesi", "Tipe.Residen")])
+pelanggan <- data.frame(pelanggan, pelanggan_matrix)
+Profesi <- unique(pelanggan[c("Profesi","Profesi.1")])
+Jenis.Kelamin <- unique(pelanggan[c("Jenis.Kelamin","Jenis.Kelamin.1")])
+Tipe.Profesi <- unique(pelanggan[c("Tipe.Residen","Tipe.Residen.1")])
+pelanggan$NilaiBelanjaSetahun <- pelanggan$NilaiBelanjaSetahun/1000000
+field_yang_digunakan = c("Jenis.Kelamin.1", "Umur", "Profesi.1", "Tipe.Residen.1","NilaiBelanjaSetahun")
+#Bagian K-Means
+set.seed(100)
+#fungsi kmeans untuk membentuk 5 cluster dengan 25 skenario random dan simpan ke dalam variable segmentasi
+segmentasi <- kmeans(x=pelanggan[c("Umur","Profesi.1")], centers=3, nstart=25)
+#tampilkan hasil k-means
+segmentasi
+```
+
+**Analisa Hasil Clustering Vector**  
+
+Untuk menganalisa hasil, DQLab akan mengawali dari hasil bagian ketiga, yaitu **clustering vector**.  
+
+Clustering vector ini adalah rangkaian vector yang berisi angka cluster. Dari hasil kita, vector berisi angka 1 sampai dengan 5, maksimum sesuai dengan jumlah cluster yang kita inginkan.
+
+Vector ini dimulai dari angka 2, yang artinya data pertama dari dataset kita akan dialokasikan pada nomor cluster 2. Dari gambar juga terlihat isi vector kedua bernlai 1, ini artinya data kedua dari dataset kita dialokasikan pada nomor cluster 1, dan seterusnya. Posisi data terakhir (ke-50) memiliki nomor cluster 5.
+
+Hasil ini dapat diakses dengan komponen cluster dari objek hasil seperti berikut:  
+
+```{r}
+segmentasi$cluster
+```
+
+Ini akan mendapatkan hasil yang sama dengan gambar di atas.
+
+**Tugas Praktek**
+
+Nah, sekarang tugas kita adalah menambahkan hasil segmentasi ini ke data asal. Caranya cukup gampang, yaitu dengan cara membuat kolom baru (kita namakan cluster) di variable pelanggan yang isinya dari segmentasi$cluster.
+
+Ketik perintah berikut pada bagian code editor setelah bagian komentar #Penggabungan hasil cluster  
+
+```{r}
+pelanggan$cluster <- segmentasi$cluster
+```
+
+Kemudian tampilkan struktur dari data pelanggan dengan perintah str.  
+
+```{r}
+# Analisa Hasil Clustering Vector
+
+#Bagian Data Preparation
+
+pelanggan <- read.csv("https://storage.googleapis.com/dqlab-dataset/customer_segments.txt", sep="\t")
+
+pelanggan_matrix <- data.matrix(pelanggan[c("Jenis.Kelamin", "Profesi", "Tipe.Residen")])
+
+pelanggan <- data.frame(pelanggan, pelanggan_matrix)
+
+Profesi <- unique(pelanggan[c("Profesi","Profesi.1")])
+
+Jenis.Kelamin <- unique(pelanggan[c("Jenis.Kelamin","Jenis.Kelamin.1")])
+
+Tipe.Profesi <- unique(pelanggan[c("Tipe.Residen","Tipe.Residen.1")])
+
+pelanggan$NilaiBelanjaSetahun <- pelanggan$NilaiBelanjaSetahun/1000000
+
+field_yang_digunakan = c("Jenis.Kelamin.1", "Umur", "Profesi.1", "Tipe.Residen.1","NilaiBelanjaSetahun")
+
+#Bagian K-Means
+
+set.seed(100)
+
+segmentasi <- kmeans(x=pelanggan[field_yang_digunakan], centers=5, nstart=25)
+
+segmentasi$cluster
+
+#Penggabungan hasil cluster
+
+pelanggan$cluster <- segmentasi$cluster
+
+str(pelanggan)
+```
+
+**Analisa Hasil Cluster Size**  
+
+Tahap berikutnya, Kita akan analisa hasil pada bagian pertama.  
+
+K-means clustering with 5 clusters of sizes 14, 5, 9, 12, 10  
+
+Ini artinya dengan k-means kita telah membagi dataset pelanggan dengan 5 cluster, dimana:  
+1. Cluster ke-1 memiliki 14 data  
+2. Cluster ke-2 memiliki 5 data  
+3. Cluster ke-3 memiliki 9 data  
+4. Cluster ke-4 memiliki 12 data  
+5. Cluster ke-5 memiliki 10 data  
+
+Dengan jumlah total 50 data, yang juga merupakan jumlah data total pelanggan.
+
+Mari kita verifikasi hal tersebut dengan memulai dari cluster 1. Ambil data pelanggan yang isi dari kolom clusternya adalah 1 dengan menggunakan fungsi which, seperti perintah berikut pada live code editor di bawah komentar #Filter cluster ke-1.  
+
+```{r}
+which(pelanggan$cluster == 1)
+```
+
+Anda seharusnya dapatkan hasil sebagai berikut:  
+
+[1]  2  6 15 20 31 33 34 37 39 40 41 44 45 46 
+
+Hasil di atas menunjukkan 14 angka posisi data untuk cluster 1. Banyaknya angka pada deretan ini sesuai ukuran untuk cluster ke-1 dari informasi di atas.
+
+Sekarang cobalah hitung jumlah deretan dengan menambahkan perintah length pada fungsi which seperti berikut:  
+
+```{r}
+length(which(pelanggan$cluster == 1))
+```
+
+Jika dijalankan maka akan didapatkan angka 14.
+
+**Tugas**
+
+Tampilkan ukuran cluster ke-2 dari pelanggan  
+
+```{r}
+#Bagian Data Preparation
+pelanggan <- read.csv("https://storage.googleapis.com/dqlab-dataset/customer_segments.txt", sep="\t")
+pelanggan_matrix <- data.matrix(pelanggan[c("Jenis.Kelamin", "Profesi", "Tipe.Residen")])
+pelanggan <- data.frame(pelanggan, pelanggan_matrix)
+Profesi <- unique(pelanggan[c("Profesi","Profesi.1")])
+Jenis.Kelamin <- unique(pelanggan[c("Jenis.Kelamin","Jenis.Kelamin.1")])
+Tipe.Profesi <- unique(pelanggan[c("Tipe.Residen","Tipe.Residen.1")])
+pelanggan$NilaiBelanjaSetahun <- pelanggan$NilaiBelanjaSetahun/1000000
+field_yang_digunakan = c("Jenis.Kelamin.1", "Umur", "Profesi.1", "Tipe.Residen.1","NilaiBelanjaSetahun")
+#Bagian K-Means
+set.seed(100)
+segmentasi <- kmeans(x=pelanggan[field_yang_digunakan], centers=5, nstart=25)
+pelanggan$cluster <- segmentasi$cluster
+#Analisa hasil
+#Filter cluster ke-1
+which(pelanggan$cluster == 1)
+# Menghitung jumlah deretan/menampilkan ukuran cluster ke-2 dari pelanggan
+length(which(pelanggan$cluster == 2))
+```
+
+**Melihat Data pada Cluster ke-N**
+
+Sejauh ini, kita belum melihat data hasil cluster. Pastinya, penasaran untuk melihat hasil tersebut, bukan?
+
+Ini dapat dihasilkan dengan cukup mudah setelah kita ikuti praktek sebelumnya, dimana hasil cluster telah diintegrasikan dan juga mengerti cara filter baris-baris data (data rows) dengan which.
+
+Berikut adalah perintah yang dapat diketikkan pada code editor (di bawah comment #Melihat data cluster ke-1) untuk melihat seluruh data pada cluster ke-1
+
+pelanggan[which(pelanggan$cluster == 1),] Jika berhasil dieksekusinya, hasilnya akan terlihat sebagai berikut.  
+
+```{r}
+pelanggan[which(pelanggan$cluster == 1),]
+```
+
+dimana ada 14 data denangan seluruh data berjenis kelamin wanita dan umur antara 14 s/d 25 tahun. Penghasilan, profesi, nilai belanja dan tipe residen cukup bervariasi.
+
+Dan ubahlah perintah untuk melihat cluster ke-2.
+
+pelanggan[which(pelanggan$cluster == 2),] 
+
+Akan tampil data sebagai berikut, dimana terlihat umur mayoritas sudah masuk usia 50 tahun ke atas dan kebanyakan adalah wiraswasta kecuali satu yang ibu rumah tangga. Dan rata-rata nilai belanja adalah sekitar 9 juta, kecuali yang berprofesi ibu rumah tangga.  
+
+Menarik bukan pembagian dari algoritmanya?
+
+**Tugas Praktek**
+
+Gantilah bagian […] dengan tiga perintah untuk melihat cluster nomor 3 sampai dengan 5.  
+
+```{r}
+#Bagian Data Preparation
+pelanggan <- read.csv("https://storage.googleapis.com/dqlab-dataset/customer_segments.txt", sep="\t")
+pelanggan_matrix <- data.matrix(pelanggan[c("Jenis.Kelamin", "Profesi", "Tipe.Residen")])
+pelanggan <- data.frame(pelanggan, pelanggan_matrix)
+Profesi <- unique(pelanggan[c("Profesi","Profesi.1")])
+Jenis.Kelamin <- unique(pelanggan[c("Jenis.Kelamin","Jenis.Kelamin.1")])
+Tipe.Profesi <- unique(pelanggan[c("Tipe.Residen","Tipe.Residen.1")])
+pelanggan$NilaiBelanjaSetahun <- pelanggan$NilaiBelanjaSetahun/1000000
+field_yang_digunakan = c("Jenis.Kelamin.1", "Umur", "Profesi.1", "Tipe.Residen.1","NilaiBelanjaSetahun")
+#Bagian K-Means
+set.seed(100)
+segmentasi <- kmeans(x=pelanggan[field_yang_digunakan], centers=5, nstart=25)
+pelanggan$cluster <- segmentasi$cluster
+#Analisa hasil
+#Melihat data cluster ke 3-5
+pelanggan[which(pelanggan$cluster == 3),]
+pelanggan[which(pelanggan$cluster == 4),]
+pelanggan[which(pelanggan$cluster == 5),]
+```
+
+## **Bab 4: Menentukan Jumlah Cluster Terbaik**
+
+## **Bab 5: "Pemaketan" Model K-Means**
+
+## **Bab 6: Mengoperasionalkan Model K-Means**
+
+## **Bab 7: Penutup**
